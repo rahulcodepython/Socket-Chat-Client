@@ -1,6 +1,6 @@
 "use client"
-import React, {useState} from 'react'
-import {io} from "socket.io-client";
+import React, { useState } from 'react'
+import { io } from "socket.io-client";
 
 const socket = io("http://localhost:9000");
 
@@ -9,6 +9,13 @@ const Home = () => {
     const [messages, setMessages] = useState([]);
 
     React.useEffect(() => {
+        socket.emit("request_all_messages", socket.id);
+    }, []);
+
+    React.useEffect(() => {
+        socket.on("receive_all_messages", (data) => {
+            setMessages(data)
+        });
         socket.on("receive_message", (data) => {
             setMessages([...messages, data])
         });
@@ -51,7 +58,7 @@ const Home = () => {
             </div>
             <div className="bg-gray-300 p-2 flex gap-4">
                 <input className="flex items-center focus:outline-none h-10 w-full rounded px-3 text-sm" type="text"
-                       placeholder="Type your message…" value={message} onChange={(e) => setMessage(e.target.value)}/>
+                    placeholder="Type your message…" value={message} onChange={(e) => setMessage(e.target.value)} />
                 <button className='px-4 py-2 bg-blue-600 rounded-sm text-white' onClick={() => SendMessage()}>Send
                 </button>
             </div>
